@@ -4,6 +4,9 @@
   "description": "tank1",
   "main": "server/app.js",
   "private": true,
+  "engines": {
+    "node": "0.11.x"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

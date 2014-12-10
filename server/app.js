@@ -19,28 +19,29 @@
   // var server = http.createServer(app);
 
   function clientApp() {
-    window.onload = function () {
+    $(function () {
       var MAX_MESSAGES = 10;
       var d = document;
-      var $message = d.getElementById('message');
-      var $messages = d.getElementById('messages');
+      var $message = $('#message');
+      var $messages = $('#messages');
       var $first;
       function pr(msg) {
         msg = new Date().toLocaleTimeString() + ' ' + msg;
         console.log(msg);
-        var $div = d.createElement('div');
-        $div.appendChild(d.createTextNode(msg));
-        if (!$first) $messages.appendChild($div);
-        else $messages.insertBefore($div, $first);
+        var $div = $('<div>');
+        $div.text(msg);
+        if (!$first) $messages.append($div);
+        else $messages.prepend($div);
         $first = $div;
-        while ($messages.childNodes.length > MAX_MESSAGES)
-          $messages.removeChild($messages.lastChild);
+        //console.log($messages.children().length + ' ' + $messages.length);
+        if ($messages.children().length > MAX_MESSAGES)
+          $messages.children().last().remove();
       }
       window.pr = pr;
       window.kd = function (keyCode) {
         pr('keyCode = ' + keyCode);
       };
-      $message.setAttribute('onkeydown', 'kd(event.keyCode)');
+      $message.attr('onkeydown', 'kd(event.keyCode)');
       var socket = io(document.location.href);
       socket.on('connect', function () {
         pr('connect');
@@ -52,12 +53,13 @@
       });
       socket.on('disconnect', function () { pr('disconnect'); });
       // socket.on('interval', function () { pr('interval'); });
-    };
+    }); // $(fn)
   } // clientApp
 
   function app(req, res) {
     res.statusCode = 200;
     res.end(
+      '<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>\n' +
       '<script src="/socket.io/socket.io.js"></script>\n' +
       '<input id="message" type="text" id="message" style="width: 400px">\n' +
       '<pre id="messages"></pre>\n' +

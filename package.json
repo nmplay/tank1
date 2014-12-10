@@ -1,0 +1,23 @@
+{
+  "name": "tank1",
+  "version": "0.0.0",
+  "description": "tank1",
+  "main": "server/app.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tank"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nmplay/tank1.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nmplay/tank1/issues"
+  },
+  "homepage": "https://github.com/nmplay/tank1",
+  "author": "LightSpeedC",
+  "license": "MIT"
+}

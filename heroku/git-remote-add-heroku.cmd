@@ -1,2 +1,2 @@
-git remote add heroku git@heroku.com:tank1.git
+git remote add heroku git@heroku.com:APPNAME.git
 pause

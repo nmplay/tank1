@@ -20,7 +20,7 @@
 
   function clientApp() {
     $(function () {
-      var MAX_MESSAGES = 10;
+      var MAX_MESSAGES = 20;
       var d = document;
       var $message = $('#message');
       var $messages = $('#messages');
@@ -33,15 +33,9 @@
         if (!$first) $messages.append($div);
         else $messages.prepend($div);
         $first = $div;
-        //console.log($messages.children().length + ' ' + $messages.length);
         if ($messages.children().length > MAX_MESSAGES)
           $messages.children().last().remove();
       }
-      window.pr = pr;
-      window.kd = function (keyCode) {
-        pr('keyCode = ' + keyCode);
-      };
-      $message.attr('onkeydown', 'kd(event.keyCode)');
       var socket = io(document.location.href);
       socket.on('connect', function () {
         pr('connect');
@@ -52,7 +46,14 @@
         socket.emit('other event', {other: 'event'});
       });
       socket.on('disconnect', function () { pr('disconnect'); });
-      // socket.on('interval', function () { pr('interval'); });
+      socket.on('message', function (data) { pr('message: ' + data.message); });
+      window.kd = function (keyCode) {
+        if (keyCode === 13 && $message.val() !== '') {
+          socket.emit('message', {message: $message.val()});
+          $message.val('');
+        }
+      };
+      $message.attr('onkeydown', 'kd(event.keyCode)');
     }); // $(fn)
   } // clientApp
 
@@ -78,6 +79,10 @@
     socket.emit('first', 'first message from server');
     socket.on('first', function (data) { console.log(data); });
     socket.on('other event', function (data) { console.log(data); });
+    socket.on('message', function (data) {
+      console.log(data);
+      io.emit('message', data);
+    });
     socket.on('disconnect', function () { console.log('disconnect'); });
   });
 

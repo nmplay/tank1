@@ -111,11 +111,20 @@
   function app(req, res) {
     res.statusCode = 200;
     res.end(
+      '<!DOCTYPE html>\n' +
+      '<html>\n' +
+      '<head>\n' +
+      '<meta charset="UTF-8">\n' +
+      '<meta http-equiv="X-UA-Compatible" content="IE=Edge, Chrome=1">\n' +
       '<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>\n' +
       '<script src="/socket.io/socket.io.js"></script>\n' +
+      '</head>\n' +
+      '<body>\n' +
       '<input id="message" type="text" id="message" style="width: 400px">\n' +
       '<pre id="messages"></pre>\n' +
-      '<script>\n(' + clientApp + ')();\n</script>\n');
+      '<script>\n(' + clientApp + ')();\n</script>\n' +
+      '</body>\n' +
+      '</html>\n');
   }
 
   var server = http.createServer(function (req, res) {

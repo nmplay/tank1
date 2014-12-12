@@ -38,52 +38,6 @@
           $messages.children().last().remove();
       }
 
-      // JSON
-      if (typeof window.JSON === 'undefined') {
-        var rep = [
-          [new RegExp('"', 'g'), '\\"'],
-          [new RegExp('\\', 'g'), '\\\\'],
-          [new RegExp('\b', 'g'), '\\b'],
-          [new RegExp('\f', 'g'), '\\f'],
-          [new RegExp('\n', 'g'), '\\n'],
-          [new RegExp('\r', 'g'), '\\r'],
-          [new RegExp('\t', 'g'), '\\t'],
-        ];
-        window.JSON = {
-          parse: function parse(s) { return eval('(' + s + ')'); },
-          stringify: function stringify(obj) {
-            switch (typeof obj) {
-              case 'string':
-                return '"' + obj.replace(rep[0][0], rep[0][1])
-                                .replace(rep[1][0], rep[1][1])
-                                .replace(rep[2][0], rep[2][1])
-                                .replace(rep[3][0], rep[3][1])
-                                .replace(rep[4][0], rep[4][1])
-                                .replace(rep[5][0], rep[5][1])
-                                .replace(rep[6][0], rep[6][1])
-                                + '"';
-              case 'number':
-              case 'boolean':
-              case 'null':
-              case 'undefined':
-                return obj + '';
-              case 'object':
-                if (obj === null) return 'null';
-                if (obj instanceof Array)
-                  return '[' + obj.map(stringify).join(',') + ']';
-                var s = '{', delim = ''; 
-                for (var i in obj) {
-                  s += delim + stringify(i) + ':' + stringify(obj[i]);
-                  delim = ',';
-                }
-                return s + '}';
-                break;
-              case '':
-            }
-          },
-        };
-      } // if !window.JSON
-
       // socket.io
       var socket = io(document.location.href);
       socket.on('connect', function () {

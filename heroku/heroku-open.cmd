@@ -1,4 +1,3 @@
-@cd %~dp0
-@cd ..
+@cd %~dp0..
 call heroku open
 pause

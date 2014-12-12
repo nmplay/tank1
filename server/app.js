@@ -88,6 +88,15 @@
     app(req, res);
   });
 
+  var timeString =
+  (process.platform === 'win32') ?
+  function timeString() {
+    return new Date().toLocaleTimeString();
+  }:
+  function timeString() {
+    return new Date(Date.now() + 9000 * 3600).toLocaleTimeString();
+  };
+
   var io = require('socket.io')(server);
   io.on('connection', function (socket) {
     socket.emit('first', 'first message from server');
@@ -96,7 +105,7 @@
     socket.on('message', function (data) {
       console.log(data);
       io.emit('message', data);
-      messages.unshift(new Date().toLocaleTimeString() + ' message: ' + data.message);
+      messages.unshift(timeString() + ' message: ' + data.message);
       if (messages.length > MAX_MESSAGES)
         messages.pop();
     });

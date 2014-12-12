@@ -25,15 +25,12 @@
 
       // pr(msg) to messages
       var $messages = $('#messages');
-      var $first;
       function pr(msg) {
         msg = new Date().toLocaleTimeString() + ' ' + msg;
         console.log(msg);
         var $div = $('<div>');
         $div.text(msg);
-        if (!$first) $messages.append($div);
-        else $messages.prepend($div);
-        $first = $div;
+        $messages.prepend($div);
         if ($messages.children().length > MAX_MESSAGES)
           $messages.children().last().remove();
       }
@@ -62,6 +59,9 @@
     }); // $(fn)
   } // clientApp
 
+  var MAX_MESSAGES = 20;
+  var messages = [];
+
   app.get('/', function (req, res) {
     res.statusCode = 200;
     res.end(
@@ -75,7 +75,7 @@
       '</head>\n' +
       '<body>\n' +
       '<input id="message" type="text" id="message" style="width: 400px">\n' +
-      '<pre id="messages"></pre>\n' +
+      '<pre id="messages"><div>' + messages.join('</div><div>') + '</div></pre>\n' +
       '<script>\n(' + clientApp + ')();\n</script>\n' +
       '</body>\n' +
       '</html>\n');
@@ -96,6 +96,9 @@
     socket.on('message', function (data) {
       console.log(data);
       io.emit('message', data);
+      messages.unshift(new Date().toLocaleTimeString() + ' message: ' + data.message);
+      if (messages.length > MAX_MESSAGES)
+        messages.pop();
     });
     socket.on('disconnect', function () { console.log('disconnect'); });
   });

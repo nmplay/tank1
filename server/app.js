@@ -15,7 +15,7 @@
            s.slice(4, 7) + ' ' + s.slice(11, 24) + ' GMT';
   }
 
-  // var app = require('express')();
+  var app = require('express')();
   // var server = http.createServer(app);
 
   function clientApp() {
@@ -62,7 +62,7 @@
     }); // $(fn)
   } // clientApp
 
-  function app(req, res) {
+  app.get('/', function (req, res) {
     res.statusCode = 200;
     res.end(
       '<!DOCTYPE html>\n' +
@@ -79,7 +79,7 @@
       '<script>\n(' + clientApp + ')();\n</script>\n' +
       '</body>\n' +
       '</html>\n');
-  }
+  });
 
   var server = http.createServer(function (req, res) {
     for (var i in headers)

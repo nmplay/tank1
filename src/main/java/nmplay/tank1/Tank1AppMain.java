@@ -15,12 +15,31 @@ public class Tank1AppMain {
 	 * @throws URISyntaxException
 	 */
 	public static void main(String[] args) throws URISyntaxException {
-		// TODO 自動生成されたメソッド・スタブ
-		Socket socket = IO.socket("http://localhpost:3000");
-		socket.emit("my event", "hi");
-		socket.on("my event", new Emitter.Listener() {
+		System.out.println("hello\n");
+		// final Socket socket = IO.socket("http://localhost:3000");
+		final Socket socket = IO.socket("https://tank1.herokuapp.com");
+		socket.connect();
+		socket.on("connect", new Emitter.Listener() {
 			public void call(Object... args) {
-				// TODO 自動生成されたメソッド・スタブ
+				System.out.println("connect");
+				socket.emit("first", "{\"first\":\"message from client.java\"}");
+			}
+		});
+		socket.on("first", new Emitter.Listener() {
+			public void call(Object... args) {
+				System.out.println("first: " + args[0]);
+				socket.emit("other event",
+						"{\"other\":\"event from client.java\"}");
+			}
+		});
+		socket.on("disconnect", new Emitter.Listener() {
+			public void call(Object... args) {
+				System.out.println("disconnect");
+			}
+		});
+		socket.on("message", new Emitter.Listener() {
+			public void call(Object... args) {
+				System.out.println("message: " + args[0]);
 			}
 		});
 	}

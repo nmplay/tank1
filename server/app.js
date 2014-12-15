@@ -9,11 +9,8 @@
     'Pragma': 'no-cache',
     'Expires': 'Thu, 01 Dec 1994 16:00:00 GMT'};
 
-  function httpDate(d) {
-    var s = d + '';
-    return s.slice(0, 3)+ ', ' + s.slice(8, 10) + ' ' +
-           s.slice(4, 7) + ' ' + s.slice(11, 24) + ' GMT';
-  }
+  var DateTime = require('date-time-string');
+  DateTime.extendDateToDateTimeString();
 
   var app = require('express')();
   // var server = http.createServer(app);
@@ -25,8 +22,9 @@
 
       // pr(msg) to messages
       var $messages = $('#messages');
+      pr('started');
       function pr(msg) {
-        msg = new Date().toLocaleTimeString() + ' ' + msg;
+        msg = DateTime.toTimeString() + ' ' + msg;
         console.log(msg);
         var $div = $('<div>');
         $div.text(msg);
@@ -72,6 +70,7 @@
       '<meta http-equiv="X-UA-Compatible" content="IE=Edge, Chrome=1">\n' +
       '<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>\n' +
       '<script src="/socket.io/socket.io.js"></script>\n' +
+      '<script src="//lightspeedworks.github.io/date-time-string/lib/date-time.js"></script>\n' +
       '</head>\n' +
       '<body>\n' +
       '<input id="message" type="text" id="message" style="width: 400px">\n' +
@@ -84,17 +83,17 @@
   var server = http.createServer(function (req, res) {
     for (var i in headers)
       res.setHeader(i, headers[i]);
-    res.setHeader('Last-Modified', httpDate(new Date()));
+    res.setHeader('Last-Modified', DateTime.toHttpDate());
     app(req, res);
   });
 
   var timeString =
   (process.platform === 'win32') ?
   function timeString() {
-    return new Date().toLocaleTimeString();
+    return DateTime.toTimeString();
   }:
   function timeString() {
-    return new Date(Date.now() + 9000 * 3600).toLocaleTimeString();
+    return new Date(Date.now() + 9000 * 3600).toTimeString();
   };
 
   var io = require('socket.io')(server);

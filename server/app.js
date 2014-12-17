@@ -48,6 +48,7 @@
         // pr('connected');
         socket.emit('get messages', {since: last_received_at});
         $status.attr('class', 'status status-online').text('online');
+
         // ping message: set interval timer
         if (timer) clearInterval(timer), timer = null;
         timer = setInterval(ping, TIMER_INTERVAL);
@@ -118,7 +119,7 @@
       '.status-online  { background-color: green; }\n' +
       '</style>\n' +
       '<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>\n' +
-      '<script src="/socket.io/socket.io.js"></script>\n' +
+      '<script src="//cdn.socket.io/socket.io-1.2.1.js"></script>\n' +
       '<script src="//lightspeedworks.github.io/date-time-string/lib/date-time.js"></script>\n' +
       '<div id="status" class="status status-unknown">unknown</div>\n' +
       '<input id="message" type="text" id="message" style="width: 400px">\n' +

@@ -5,6 +5,7 @@
   "main": "server/app.js",
   "private": true,
   "dependencies": {
+    "base-class-extend": ">=0.0.9",
     "date-time-string": ">=0.0.6",
     "express": "^4.10.5",
     "socket.io": "^1.2.1"

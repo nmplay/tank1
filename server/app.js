@@ -12,6 +12,8 @@
   var DateTime = require('date-time-string');
   DateTime.extendDateToDateTimeString();
 
+  var serverStartTime = Date.now();
+
   var app = require('express')();
   // var server = http.createServer(app);
 
@@ -27,6 +29,7 @@
 
       var $status = $('#status');
       var onlineMembersCount = 0;
+      var serverStartTimeString = DateTime.toDateTimeString(new Date(serverStartTime));
 
       // pr(msg) to messages
       var $messages = $('#messages');
@@ -54,7 +57,7 @@
         timer = setInterval(ping, TIMER_INTERVAL);
         ping();
         function ping() {
-          socket.emit('ping', {ping_at: Date.now().toString(36)});
+          socket.emit('ping', {ping_at: DateUtils.valueOf(Date.now())});
         }
       }); // connect
 
@@ -65,7 +68,7 @@
       }); // disconnect
 
       socket.on('message', function (msg) {
-        mpr(DateTime.toTimeString(new Date(parseInt(msg.message_at, 36))),
+        mpr(DateTime.toTimeString(new Date(DateUtils.valueOf(msg.message_at))),
           'message:', msg.message);
         last_received_at = msg.message_at;
         // pr('message:', msg.message);
@@ -74,7 +77,7 @@
       socket.on('response messages', function (msgs) {
         var msg;
         while (msg = msgs.pop()) {
-          mpr(DateTime.toTimeString(new Date(parseInt(msg.message_at, 36))),
+          mpr(DateTime.toTimeString(new Date(DateUtils.valueOf(msg.message_at))),
             'message:', msg.message);
           last_received_at = msg.message_at;
         }
@@ -91,13 +94,16 @@
 
       socket.on('status', function (data) {
         if (data.onlineMembersCount) onlineMembersCount = data.onlineMembersCount;
-        $status.text('online - count: ' + onlineMembersCount);
+        $status.text('online - count: ' + onlineMembersCount +
+          ' - ' + serverStartTimeString);
       }); // status
 
       socket.on('pong', function (data) {
-        $status.text('online - count: ' + onlineMembersCount + ' - rtt: ' +
-          (Date.now() - parseInt(data.ping_at, 36)) + ' ms - diff: ' +
-          (parseInt(data.pong_at, 36) - parseInt(data.ping_at, 36)) + ' ms');
+        var rtt = Date.now() - DateUtils.valueOf(data.ping_at);
+        $status.text('online - count: ' + onlineMembersCount +
+          ' - ' + serverStartTimeString +
+          ' - rtt: ' + rtt + ' ms - diff: ' +
+          (DateUtils.valueOf(data.pong_at) - DateUtils.valueOf(data.ping_at)) + ' ms');
       }); // pong
     }); // $(fn)
   } // clientApp
@@ -105,6 +111,23 @@
   var MAX_MESSAGES = 20;
   var messages = [];
   var onlineMembersCount = 0;
+
+  function defineCommonUtils() {
+    var g = Function('return this')();
+
+    // DateUtils.valueOf
+    g.DateUtils = {
+      valueOf: function valueOf(time) {
+        if (typeof time === 'number')
+          return ('00000000' + time.toString(36)).slice(-10);
+        else if (typeof time === 'string')
+          return parseInt(time, 36);
+        else
+          return time;
+      }
+    }; // DateUtils
+  }
+  defineCommonUtils();
 
   app.get('/', function (req, res) {
     res.statusCode = 200;
@@ -124,7 +147,11 @@
       '<div id="status" class="status status-unknown">unknown</div>\n' +
       '<input id="message" type="text" id="message" style="width: 400px">\n' +
       '<pre id="messages"></pre>\n' +
-      '<script>\n(' + clientApp + ')();\n</script>\n');
+      '<script>\n' +
+      'var serverStartTime = ' + serverStartTime + ';\n' +
+      '(' + defineCommonUtils + ')();\n' +
+      '(' + clientApp + ')();\n' +
+      '</script>\n');
   });
 
   var server = http.createServer(function (req, res) {
@@ -157,7 +184,7 @@
     }); // get messages
 
     socket.on('message', function (msg) {
-      msg.message_at = Date.now().toString(36);
+      msg.message_at = DateUtils.valueOf(Date.now());
       console.log(msg);
       io.emit('message', msg);
       messages.unshift(msg);
@@ -166,9 +193,9 @@
     }); // message
 
     socket.on('ping', function (data) {
-      data.pong_at = Date.now().toString(36);
+      data.pong_at = DateUtils.valueOf(Date.now());
       data.onlineMembersCount = onlineMembersCount;
-      // console.log('ping', data, parseInt(data.pong_at, 36) - parseInt(data.ping_at, 36));
+      // console.log('ping', data, DateUtils.valueOf(data.pong_at) - DateUtils.valueOf(data.ping_at));
       socket.emit('pong', data);
     }); // ping
 
